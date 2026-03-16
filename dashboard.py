@@ -526,9 +526,9 @@ h3 { color: #0f172a !important; }
 # ─────────────────────────────────────────────
 #  CONSTANTS & DEFAULTS
 # ─────────────────────────────────────────────
-DEFAULT_TEMP = 80.0
-DEFAULT_VIB = 0.25  # g
-DEFAULT_PRESSURE = 3.5
+DEFAULT_TEMP = 50.0
+DEFAULT_VIB = 3.0  # mid range of 0-7.5
+DEFAULT_PRESSURE = 8.0
 
 MM_PER_S_PER_G = 1000.0
 
@@ -547,15 +547,15 @@ PRED_DOWNTIME = 2
 
 
 def sensor_status(temp, vib_mm, pressure):
-    if temp > 75 or vib_mm > 700 or pressure < 4.0:
+    if temp > 80 or vib_mm > 6.0 or pressure < 3.0:
         return "Critical", "critical"
-    if temp > 60 or vib_mm > 500 or pressure < 5.0:
+    if temp > 60 or vib_mm > 4.5 or pressure < 5.0:
         return "Warning", "warning"
     return "Normal", "normal"
 
 
 def temp_status(v):
-    if v > 75:
+    if v > 80:
         return "Critical", "critical"
     if v > 60:
         return "Warning",  "warning"
@@ -563,15 +563,15 @@ def temp_status(v):
 
 
 def vib_status(v):
-    if v > 700:
+    if v > 6.0:
         return "Critical", "critical"
-    if v > 500:
+    if v > 4.5:
         return "Warning",  "warning"
     return "Normal", "normal"
 
 
 def pres_status(v):
-    if v < 4.0:
+    if v < 3.0:
         return "Critical", "critical"
     if v < 5.0:
         return "Warning",  "warning"
@@ -581,7 +581,7 @@ def pres_status(v):
 def extract_vibration_features(vib_mm):
     n = 100
     rng = np.random.default_rng(123)
-    signal = vib_mm + rng.normal(0, vib_mm * 0.08 + 0.3, size=n)
+    signal = vib_mm + rng.normal(0, vib_mm * 0.08 + 0.05, size=n)
     rms = np.sqrt(np.mean(signal ** 2))
     m2 = np.mean((signal - np.mean(signal)) ** 2)
     m4 = np.mean((signal - np.mean(signal)) ** 4)
@@ -593,7 +593,7 @@ def extract_vibration_features(vib_mm):
 
 def detect_faults(temp, vib_mm, pressure):
     faults = []
-    if temp > 75:
+    if temp > 80:
         faults.append({
             "fault": "Overheating",
             "sensor": f"Temp: {temp}°C",
@@ -603,27 +603,27 @@ def detect_faults(temp, vib_mm, pressure):
             "action": "Shut down & inspect cooling system immediately",
             "icon": "🔴",
         })
-    if vib_mm > 700:
+    if vib_mm > 6.0:
         faults.append({
             "fault": "Bearing Failure",
-            "sensor": f"Vib: {vib_mm:.1f} mm/s",
+            "sensor": f"Vib: {vib_mm:.2f} mm/s",
             "severity": "Critical",
             "sev_class": "sev-critical",
             "row_class": "fault-row-critical",
             "action": "Replace bearing — schedule emergency maintenance",
             "icon": "🔴",
         })
-    elif vib_mm > 500:
+    elif vib_mm > 4.5:
         faults.append({
             "fault": "Bearing Wear",
-            "sensor": f"Vib: {vib_mm:.1f} mm/s",
+            "sensor": f"Vib: {vib_mm:.2f} mm/s",
             "severity": "Warning",
             "sev_class": "sev-warning",
             "row_class": "fault-row-warning",
             "action": "Inspect bearings & alignment",
             "icon": "🟡",
         })
-    if pressure < 4.0:
+    if pressure < 3.0:
         faults.append({
             "fault": "Valve Leakage",
             "sensor": f"Press: {pressure} bar",
@@ -647,16 +647,30 @@ def detect_faults(temp, vib_mm, pressure):
 
 
 def health_score(temp, vib_mm, pressure, vib_rms, vib_kurtosis):
-    t = max(0, 100 - ((temp - 20) / 80) * 100)
-    v_rms = max(0, 100 - min(vib_rms, 100))
+    # temp: 0-100, higher = worse
+    t = max(0, 100 - (temp / 100) * 100)
+    # vib: 0-7.5 mm/s, higher = worse
+    v = max(0, 100 - (vib_mm / 7.5) * 100)
+    # pressure: 1-15 bar, sweet spot 6-12, penalise low/high ends
+    p_norm = (pressure - 1) / 14  # 0 to 1
+    p = max(0, 100 - abs(p_norm - 0.5) * 200)
+    p = max(0, min(100, p))
+    # kurtosis penalty
     k = max(0, 100 - min(max((vib_kurtosis - 3) * 10, 0), 100))
-    p = max(0, min(100, (pressure / 10) * 100))
-    return round(t * 0.3 + v_rms * 0.3 + k * 0.2 + p * 0.2)
+    return round(t * 0.3 + v * 0.3 + p * 0.2 + k * 0.2)
 
 
 def health_bar(score):
-    col = "#16a34a" if score >= 70 else (
-        "#d97706" if score >= 40 else "#dc2626")
+    if score >= 90:
+        col = "#16a34a"    # green  — Good
+    elif score >= 70:
+        col = "#22c55e"    # light green — Normal
+    elif score >= 50:
+        col = "#f59e0b"    # amber — Warning
+    elif score >= 30:
+        col = "#f97316"    # orange — Poor
+    else:
+        col = "#dc2626"    # red — Critical
     return f"""
     <div class="health-bar-bg">
         <div class="health-bar-fill" style="width:{score}%;background:{col};">
@@ -715,13 +729,11 @@ with st.sidebar:
     st.markdown(f"📍 **Location:** {location}")
     st.markdown("---")
     st.markdown("**Simulate Sensor Values**")
-    temperature = st.slider("🌡 Temperature (°C)", 20,
-                            100, int(DEFAULT_TEMP), 1)
-    vibration_mm = st.slider("📳 Vibration (mm/s)", 0.0,
-                             1200.0, DEFAULT_VIB * 1000, 1.0)
-    pressure = st.slider("💨 Pressure (bar)", 0.0, 10.0, DEFAULT_PRESSURE, 0.1)
+    temperature = st.slider("🌡 Temperature (°C)", 0, 100, int(DEFAULT_TEMP), 1)
+    vibration_mm = st.slider("📳 Vibration (mm/s)", 0.0, 7.5, DEFAULT_VIB, 0.1)
+    pressure = st.slider("💨 Pressure (bar)", 1.0, 15.0, DEFAULT_PRESSURE, 0.1)
     st.markdown("---")
-    st.caption("💡 Default values: Temp=80°C · Vib=250 mm/s · Pressure=3.5 bar")
+    st.caption("💡 Default values: Temp=50°C · Vib=3.0 mm/s · Pressure=8.0 bar")
     st.markdown("---")
     st.caption("🏭 Airlytics v2.0")
 
@@ -740,9 +752,9 @@ t_lbl, t_cls = temp_status(temperature)
 v_lbl, v_cls = vib_status(vibration_mm)
 p_lbl, p_cls = pres_status(pressure)
 
-t_times, t_vals = generate_trend(temperature, 1.8, 20, 100)
-v_times, v_vals = generate_trend(vibration_mm, 8.0, 0.0, 1200.0)
-p_times, p_vals = generate_trend(pressure, 0.15, 0.0, 10.0)
+t_times, t_vals = generate_trend(temperature, 1.5, 0, 100)
+v_times, v_vals = generate_trend(vibration_mm, 0.15, 0.0, 7.5)
+p_times, p_vals = generate_trend(pressure, 0.2, 1.0, 15.0)
 
 reduction_pct = round((TRAD_DOWNTIME - PRED_DOWNTIME) / TRAD_DOWNTIME * 100)
 
@@ -769,13 +781,13 @@ st.markdown(f"""
 k1, k2, k3, k4 = st.columns(4)
 with k1:
     st.metric("🌡 Temperature", f"{temperature} °C",
-              delta=f"{temperature - 45} °C vs baseline", delta_color="inverse")
+              delta=f"{temperature - 50} °C vs baseline", delta_color="inverse")
 with k2:
     st.metric("📳 Vibration", f"{vibration_mm:.1f} mm/s",
-              delta=f"{round(vibration_mm - 250, 1)} mm/s vs baseline", delta_color="inverse")
+              delta=f"{round(vibration_mm - 3.0, 2)} mm/s vs baseline", delta_color="inverse")
 with k3:
     st.metric("💨 Pressure", f"{pressure:.1f} bar",
-              delta=f"{round(pressure - 5.5, 1)} bar vs nominal", delta_color="normal")
+              delta=f"{round(pressure - 8.0, 1)} bar vs nominal", delta_color="normal")
 with k4:
     st.metric("🏥 Health Score", f"{score} / 100")
 
@@ -803,24 +815,24 @@ with sc1:
     st.markdown(sensor_card_html("🌡", "Temperature",
                 f"{temperature}", "°C", t_lbl, t_cls), unsafe_allow_html=True)
     st.plotly_chart(trend_fig(t_times, t_vals, "Temp",
-                    "#dc2626", [15, 105]), width='stretch')
+                    "#dc2626", [0, 105]), width='stretch')
 with sc2:
     st.markdown(sensor_card_html("📳", "Vibration",
                 f"{vibration_mm:.1f}", "mm/s", v_lbl, v_cls), unsafe_allow_html=True)
     st.plotly_chart(trend_fig(v_times, v_vals, "Vib",
-                    "#d97706", [0, 1200]), width='stretch')
+                    "#d97706", [0, 7.8]), width='stretch')
 with sc3:
     st.markdown(sensor_card_html("💨", "Pressure",
                 f"{pressure:.1f}", "bar", p_lbl, p_cls), unsafe_allow_html=True)
     st.plotly_chart(trend_fig(p_times, p_vals, "Press",
-                    "#2563eb", [-0.3, 10.5]), width='stretch')
+                    "#2563eb", [0.5, 15.5]), width='stretch')
 
 sensor_table = pd.DataFrame({
     "Sensor":       ["Temperature", "Vibration", "Pressure"],
     "Value":        [f"{temperature} °C", f"{vibration_mm:.1f} mm/s", f"{pressure:.1f} bar"],
-    "Normal Range": ["20 – 60 °C", "0 – 500 mm/s", "5.0 – 9.0 bar"],
+    "Normal Range": ["0 – 60 °C", "0.0 – 4.5 mm/s", "5.0 – 12.0 bar"],
     "Status":       [t_lbl, v_lbl, p_lbl],
-    "Threshold":    ["> 75°C = Critical", "> 700 mm/s = Critical", "< 4.0 bar = Warning"],
+    "Threshold":    ["> 80°C = Critical", "> 6.0 mm/s = Critical", "< 3.0 bar = Critical"],
 })
 st.markdown('<div class="card">', unsafe_allow_html=True)
 st.markdown("**📋 Sensor Summary Table**")
@@ -845,15 +857,21 @@ with ha1:
     st.markdown("**Machine Health Score**")
     st.markdown(health_bar(score), unsafe_allow_html=True)
 
-    if score >= 70:
+    if score >= 90:
         st.success(
-            "🟢 **Good Condition** — Compressor is operating within safe parameters. Continue routine monitoring schedule.")
-    elif score >= 40:
+            "🟢 **Good** (90–100) — Compressor is operating at peak condition. Continue routine monitoring.")
+    elif score >= 70:
+        st.success(
+            "🟩 **Normal** (70–89) — All systems within acceptable range. Schedule next routine check.")
+    elif score >= 50:
         st.warning(
-            "🟡 **Moderate Concern** — Some sensor readings are elevated. Schedule preventive inspection within 48 hours.")
+            "🟡 **Warning** (50–69) — Some sensor readings elevated. Schedule inspection within 48 hours.")
+    elif score >= 30:
+        st.warning(
+            "🟠 **Poor** (30–49) — Multiple readings outside safe range. Maintenance required soon.")
     else:
         st.error(
-            "🔴 **Poor Condition** — Multiple sensors outside safe range. Immediate maintenance intervention required.")
+            "🔴 **Critical** (0–29) — Severe fault indicators detected. Immediate shutdown and maintenance required.")
 
     st.markdown("""
     <div class="score-weights">
@@ -863,8 +881,16 @@ with ha1:
     st.markdown('</div>', unsafe_allow_html=True)
 
 with ha2:
-    gauge_col = "#16a34a" if score >= 70 else (
-        "#d97706" if score >= 40 else "#dc2626")
+    if score >= 90:
+        gauge_col = "#16a34a"
+    elif score >= 70:
+        gauge_col = "#22c55e"
+    elif score >= 50:
+        gauge_col = "#f59e0b"
+    elif score >= 30:
+        gauge_col = "#f97316"
+    else:
+        gauge_col = "#dc2626"
     fig_gauge = go.Figure(go.Indicator(
         mode="gauge+number+delta",
         value=score,
@@ -876,9 +902,11 @@ with ha2:
             "bgcolor": "white",
             "borderwidth": 2, "bordercolor": "#e2e8f0",
             "steps": [
-                {"range": [0,  40], "color": "#fff1f2"},
-                {"range": [40, 70], "color": "#fefce8"},
-                {"range": [70, 100], "color": "#f0fdf4"},
+                {"range": [0,  30], "color": "#fff1f2"},
+                {"range": [30, 50], "color": "#fff7ed"},
+                {"range": [50, 70], "color": "#fefce8"},
+                {"range": [70, 90], "color": "#f0fdf4"},
+                {"range": [90, 100], "color": "#dcfce7"},
             ],
             "threshold": {"line": {"color": "#0f172a", "width": 3}, "thickness": 0.75, "value": 70},
         },
@@ -983,13 +1011,13 @@ ai_recommendations = []
 if temperature > 75:
     ai_recommendations.append(
         "High temperature detected — check cooling system and airflow.")
-if vibration_rms > 500 or vibration_mm > 700:
+if vibration_rms > 4.5 or vibration_mm > 6.0:
     ai_recommendations.append(
         "High vibration levels — inspect bearings, coupling, and shaft alignment.")
 if vibration_kurtosis > 5:
     ai_recommendations.append(
         "Abnormal vibration kurtosis — schedule vibration diagnostics for bearing faults.")
-if pressure < 4.5:
+if pressure < 5.0:
     ai_recommendations.append(
         "Low pressure detected — inspect valves, piping leaks, and inlet restrictions.")
 if not ai_recommendations:
