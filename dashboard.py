@@ -9,55 +9,134 @@ from datetime import datetime, timedelta
 #  PAGE CONFIG
 # ─────────────────────────────────────────────
 st.set_page_config(
-    page_title="AI-Based Predictive Maintenance System",
+    page_title="Airlytics",
     page_icon="🛠️",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
 # ─────────────────────────────────────────────
-#  CUSTOM CSS — clean light industrial theme
+#  CUSTOM CSS — high contrast, fully readable
 # ─────────────────────────────────────────────
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap');
 
-html, body, [class*="css"] {
-    font-family: 'Inter', sans-serif;
-    color: #0f172a;
+/* ── Global font ── */
+html, body, [class*="css"], .stApp {
+    font-family: 'Inter', sans-serif !important;
 }
 
-/* Light background */
-.stApp { background: #f3f6ff; color: #0f172a !important; }
+/* ── Dark text only for main area — sidebar excluded ── */
+section.main p, section.main span, section.main label,
+section.main h2, section.main h3, section.main h4,
+.main .stMarkdown p, .main .stMarkdown li,
+.main .stMarkdown span, .main .stMarkdown strong,
+.main .stMarkdown em, .main .element-container p,
+.main .element-container span {
+    color: #111827 !important;
+}
 
-/* Sidebar */
+.stApp {
+    background: #f0f4f8 !important;
+}
+
+/* ── Force all markdown text to be dark ── */
+.stMarkdown p,
+.stMarkdown li,
+.stMarkdown span,
+.stMarkdown strong,
+.stMarkdown em,
+.element-container p,
+.element-container span {
+    color: #111827 !important;
+}
+
+/* ── Sidebar ── */
 [data-testid="stSidebar"] {
-    background: #ffffff !important;
-    border-right: 1px solid #dbeafe;
-    box-shadow: 2px 0 8px rgba(15, 23, 42, 0.06);
+    background: #1e293b !important;
+    border-right: 1px solid #334155;
 }
-[data-testid="stSidebar"] * { color: #0f172a !important; }
-[data-testid="stSidebar"] .stSelectbox label,
-[data-testid="stSidebar"] .stSlider  label {
-    color: #1e293b !important;
-    font-size: 0.72rem !important;
+[data-testid="stSidebar"],
+[data-testid="stSidebar"] *,
+[data-testid="stSidebar"] p,
+[data-testid="stSidebar"] span,
+[data-testid="stSidebar"] div,
+[data-testid="stSidebar"] label,
+[data-testid="stSidebar"] h1,
+[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h3,
+[data-testid="stSidebar"] h4,
+[data-testid="stSidebar"] strong,
+[data-testid="stSidebar"] b,
+[data-testid="stSidebar"] em,
+[data-testid="stSidebar"] li,
+[data-testid="stSidebar"] small,
+[data-testid="stSidebar"] .stMarkdown *,
+[data-testid="stSidebar"] .stSlider *,
+[data-testid="stSidebar"] .stSelectbox *,
+[data-testid="stSidebar"] .element-container * {
+    color: #f1f5f9 !important;
+    -webkit-text-fill-color: #f1f5f9 !important;
+}
+[data-testid="stSidebar"] .stSlider label,
+[data-testid="stSidebar"] .stSelectbox label {
+    color: #94a3b8 !important;
+    -webkit-text-fill-color: #94a3b8 !important;
+    font-size: 0.70rem !important;
     font-weight: 700;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    margin-bottom: 2px;
 }
-[data-testid="stSidebar"] .stSelectbox, [data-testid="stSidebar"] select, [data-testid="stSidebar"] .stSlider {
-    color: #0f172a !important;
-    background: #f9fbff !important;
-    border-color: #e2e8f0 !important;
+/* ── Selectbox: lock ALL states to consistent dark-slate style ── */
+[data-testid="stSidebar"] .stSelectbox div[role="combobox"],
+[data-testid="stSidebar"] .stSelectbox div[role="combobox"] *,
+[data-testid="stSidebar"] [data-baseweb="select"],
+[data-testid="stSidebar"] [data-baseweb="select"] *,
+[data-testid="stSidebar"] [data-baseweb="select"] > div,
+[data-testid="stSidebar"] [data-baseweb="select"] > div > div,
+[data-testid="stSidebar"] [data-baseweb="select"] input,
+[data-testid="stSidebar"] [data-baseweb="select"] span,
+[data-testid="stSidebar"] [data-baseweb="popover"] *,
+[data-testid="stSidebar"] ul[role="listbox"],
+[data-testid="stSidebar"] ul[role="listbox"] li,
+[data-testid="stSidebar"] ul[role="listbox"] li * {
+    background: #334155 !important;
+    background-color: #334155 !important;
+    border: 1px solid #475569 !important;
+    border-radius: 8px !important;
+    color: #f1f5f9 !important;
+    -webkit-text-fill-color: #f1f5f9 !important;
 }
-[data-testid="stSidebar"] .stSelectbox div[role="combobox"] {
-    background: #ffffff !important;
-    border: 1px solid #dbeafe !important;
-    border-radius: 10px;
-    color: #1f2937 !important;
+/* Hover state for dropdown options */
+[data-testid="stSidebar"] ul[role="listbox"] li:hover,
+[data-testid="stSidebar"] ul[role="listbox"] li[aria-selected="true"],
+[data-testid="stSidebar"] ul[role="listbox"] li:hover *,
+[data-testid="stSidebar"] ul[role="listbox"] li[aria-selected="true"] * {
+    background: #1e40af !important;
+    background-color: #1e40af !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
 }
-
+/* The chevron/arrow icon inside the selectbox */
+[data-testid="stSidebar"] [data-baseweb="select"] svg {
+    fill: #94a3b8 !important;
+    color: #94a3b8 !important;
+}
+[data-testid="stSidebar"] h3,
+[data-testid="stSidebar"] strong,
+[data-testid="stSidebar"] b {
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
+[data-testid="stSidebar"] .stCaption,
+[data-testid="stSidebar"] .stCaption * {
+    color: #94a3b8 !important;
+    -webkit-text-fill-color: #94a3b8 !important;
+}
+[data-testid="stSidebar"] hr {
+    border-color: #334155 !important;
+}
 
 /* ── Section heading ── */
 .sec-head {
@@ -66,12 +145,13 @@ html, body, [class*="css"] {
     gap: 10px;
     font-size: 1rem;
     font-weight: 700;
-    color: #1a202c;
+    color: #0f172a !important;
     letter-spacing: 0.01em;
     margin: 0 0 16px 0;
     padding-bottom: 10px;
-    border-bottom: 2px solid #e2e8f0;
+    border-bottom: 2px solid #cbd5e1;
 }
+.sec-head * { color: #0f172a !important; }
 .sec-head-icon {
     width: 32px; height: 32px;
     border-radius: 8px;
@@ -81,85 +161,91 @@ html, body, [class*="css"] {
 
 /* ── Page header ── */
 .page-header {
-    background: linear-gradient(120deg, #0f172a 0%, #1d4ed8 50%, #60a5fa 100%);
+    background: linear-gradient(120deg, #0f172a 0%, #1d4ed8 55%, #3b82f6 100%);
     border-radius: 18px;
-    padding: 28px 32px;
+    padding: 30px 36px;
     margin-bottom: 28px;
-    color: #fff;
     position: relative;
     overflow: hidden;
-    border: 1px solid rgba(255,255,255,0.3);
-    box-shadow: 0 12px 35px rgba(15, 23, 42, 0.2);
+    border: 1px solid rgba(255,255,255,0.15);
+    box-shadow: 0 12px 35px rgba(15, 23, 42, 0.25);
 }
 .page-header::after {
     content: '';
     position: absolute;
-    right: -30px; top: -30px;
-    width: 200px; height: 200px;
-    background: rgba(255, 255, 255, 0.24);
+    right: -40px; top: -40px;
+    width: 220px; height: 220px;
+    background: rgba(255,255,255,0.08);
     border-radius: 50%;
 }
 .page-header h1 {
-    font-size: 2rem;
+    font-size: 1.9rem;
     font-weight: 800;
-    margin: 0 0 6px;
+    margin: 0 0 8px;
     letter-spacing: -0.02em;
-    text-shadow: 1px 1px 8px rgba(0,0,0,0.4);
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+    text-shadow: 0 2px 14px rgba(0,0,0,0.5);
 }
 .page-header p {
     font-size: 0.95rem;
-    opacity: 0.95;
     margin: 0;
-    color: #f8fbff;
+    color: #e0eeff !important;
+    -webkit-text-fill-color: #e0eeff !important;
+    opacity: 1 !important;
 }
 .header-badges { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
 .hbadge {
-    background: #eaf4ff;
-    border: 1px solid #c3ddff;
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.35);
     border-radius: 20px;
     padding: 4px 14px;
     font-size: 0.75rem;
     font-weight: 600;
-    letter-spacing: 0.05em;
-    color: #1a202c;
+    letter-spacing: 0.04em;
+    color: #ffffff !important;
 }
 
 /* ── White card ── */
 .card {
     background: #ffffff;
-    border: 1px solid #dbeafe;
+    border: 1px solid #e2e8f0;
     border-radius: 14px;
-    padding: 20px 22px;
+    padding: 22px 24px;
     margin-bottom: 20px;
-    box-shadow: 0 8px 26px rgba(15, 23, 42, 0.08);
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.07);
+}
+.card p, .card span, .card div, .card strong, .card b {
+    color: #111827 !important;
 }
 
 /* ── Sensor card ── */
 .sensor-card {
-    background: #f8fbff;
-    border: 1px solid #dbeafe;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
     border-radius: 14px;
-    padding: 18px 20px;
-    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+    padding: 20px 22px;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.07);
+    margin-bottom: 12px;
 }
 .sensor-label {
     font-size: 0.72rem;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: #718096;
-    margin-bottom: 6px;
+    color: #475569 !important;
+    margin-bottom: 8px;
 }
 .sensor-value {
     font-family: 'JetBrains Mono', monospace;
     font-size: 2rem;
     font-weight: 700;
     line-height: 1.1;
-    color: #1a202c;
+    color: #0f172a !important;
 }
 .sensor-unit {
     font-size: 0.9rem;
-    color: #a0aec0;
+    color: #64748b !important;
     font-weight: 400;
 }
 .sensor-status {
@@ -167,23 +253,23 @@ html, body, [class*="css"] {
     align-items: center;
     gap: 5px;
     margin-top: 10px;
-    padding: 3px 10px;
+    padding: 4px 12px;
     border-radius: 20px;
     font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.06em;
 }
-.status-normal  { background: #38a169; color: white; border: 1px solid #2f855a; }
-.status-warning { background: #fffbeb; color: #4b5563; border: 1px solid #f2c94c; }
-.status-critical{ background: #fee2e2; color: #9b2c2c; border: 1px solid #fca5a5; }
+.status-normal   { background: #dcfce7; color: #14532d !important; border: 1px solid #86efac; }
+.status-warning  { background: #fef9c3; color: #713f12 !important; border: 1px solid #fde047; }
+.status-critical { background: #fee2e2; color: #7f1d1d !important; border: 1px solid #fca5a5; }
+
 /* ── Health score bar ── */
-.health-wrap { margin-top: 8px; }
 .health-bar-bg {
-    background: #edf2f7;
+    background: #e2e8f0;
     border-radius: 8px;
-    height: 28px;
+    height: 30px;
     overflow: hidden;
-    border: 1px solid #e2e8f0;
+    border: 1px solid #cbd5e1;
 }
 .health-bar-fill {
     height: 100%;
@@ -191,11 +277,11 @@ html, body, [class*="css"] {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    padding-right: 10px;
+    padding-right: 12px;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.78rem;
+    font-size: 0.82rem;
     font-weight: 700;
-    color: #fff;
+    color: #ffffff !important;
     transition: width 0.5s ease;
 }
 
@@ -204,47 +290,45 @@ html, body, [class*="css"] {
     display: grid;
     grid-template-columns: 1.5fr 1fr 2fr;
     gap: 12px;
-    padding: 12px 14px;
-    border-radius: 8px;
-    margin-bottom: 8px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    margin-bottom: 10px;
     border: 1px solid;
     align-items: center;
 }
-.fault-row-critical { background: #fff5f5; border-color: #fed7d7; }
-.fault-row-warning  { background: #fffff0; border-color: #fef08a; }
-.fault-row-none     { background: #f0fff4; border-color: #9ae6b4; }
-.fault-name { font-weight: 700; font-size: 0.88rem; color: #1a202c; }
+.fault-row-critical { background: #fff1f2; border-color: #fecdd3; }
+.fault-row-warning  { background: #fefce8; border-color: #fde68a; }
+.fault-row-none     { background: #f0fdf4; border-color: #bbf7d0; }
+.fault-name {
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: #0f172a !important;
+}
+.fault-sensor-text {
+    font-size: 0.75rem;
+    color: #374151 !important;
+    margin-top: 3px;
+    font-family: 'JetBrains Mono', monospace;
+}
 .fault-severity {
     font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.06em;
-    padding: 3px 10px;
+    padding: 4px 12px;
     border-radius: 20px;
     text-align: center;
+    display: inline-block;
 }
-.sev-critical { background: #fed7d7; color: #9b2c2c; }
-.sev-warning  { background: #fef08a; color: #744210; }
-.sev-normal   { background: #c6f6d5; color: #276749; }
-.fault-action { font-size: 0.8rem; color: #4a5568; }
-
-/* ── Alert box ── */
-.alert-box {
-    border-radius: 10px;
-    padding: 16px 20px;
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    margin-bottom: 12px;
-    border: 1px solid;
+.sev-critical { background: #fecdd3; color: #7f1d1d !important; }
+.sev-warning  { background: #fde68a; color: #713f12 !important; }
+.sev-normal   { background: #bbf7d0; color: #14532d !important; }
+.fault-action {
+    font-size: 0.82rem;
+    color: #1e293b !important;
+    font-weight: 500;
 }
-.alert-critical { background: #fff5f5; border-color: #fc8181; }
-.alert-warning  { background: #fffbeb; border-color: #f6ad55; }
-.alert-info     { background: #ebf8ff; border-color: #90cdf4; }
-.alert-icon { font-size: 1.3rem; margin-top: 1px; }
-.alert-title { font-weight: 700; font-size: 0.9rem; color: #1a202c; }
-.alert-body  { font-size: 0.82rem; color: #4a5568; margin-top: 2px; }
 
-/* ── Downtime comparison ── */
+/* ── Downtime comparison cards ── */
 .dt-compare {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -252,89 +336,190 @@ html, body, [class*="css"] {
     margin-bottom: 18px;
 }
 .dt-card {
-    border-radius: 10px;
-    padding: 18px;
+    border-radius: 12px;
+    padding: 20px;
     text-align: center;
     border: 1px solid;
 }
-.dt-traditional { background: #fff5f5; border-color: #fed7d7; }
-.dt-predictive  { background: #f0fff4; border-color: #9ae6b4; }
-.dt-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: #718096; margin-bottom: 8px; }
-.dt-hours { font-family: 'JetBrains Mono', monospace; font-size: 2.2rem; font-weight: 700; line-height: 1; }
-.dt-traditional .dt-hours { color: #c53030; }
-.dt-predictive  .dt-hours { color: #276749; }
-.dt-sub { font-size: 0.75rem; color: #718096; margin-top: 4px; }
+.dt-traditional { background: #fff1f2; border-color: #fecdd3; }
+.dt-predictive  { background: #f0fdf4; border-color: #bbf7d0; }
+.dt-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #374151 !important;
+    margin-bottom: 8px;
+}
+.dt-hours {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 2.4rem;
+    font-weight: 700;
+    line-height: 1;
+}
+.dt-traditional .dt-hours { color: #991b1b !important; }
+.dt-predictive  .dt-hours { color: #14532d !important; }
+.dt-sub { font-size: 0.75rem; color: #374151 !important; margin-top: 6px; }
 
 .reduction-pill {
-    .reduction-pill {
-    background: linear-gradient(135deg, #2b6cb0, #3182ce);
-    color: #fff;
+    background: linear-gradient(135deg, #1d4ed8, #2563eb);
+    color: #ffffff !important;
     border-radius: 30px;
-    padding: 10px 24px;
+    padding: 10px 28px;
     text-align: center;
     font-weight: 700;
     font-size: 1rem;
     letter-spacing: 0.04em;
     margin-bottom: 8px;
     display: inline-block;
+    box-shadow: 0 4px 14px rgba(29, 78, 216, 0.3);
+}
+
+.saving-text {
+    font-size: 0.82rem;
+    color: #374151 !important;
+    margin-top: 8px;
+    line-height: 1.7;
+}
+.saving-text strong {
+    color: #0f172a !important;
+}
+
+/* ── Score weight text ── */
+.score-weights {
+    margin-top: 14px;
+    font-size: 0.8rem;
+    color: #374151 !important;
+    line-height: 2;
+}
+.score-weights strong {
+    color: #0f172a !important;
 }
 
 /* ── Metric overrides ── */
 [data-testid="metric-container"] {
-    background: #fff;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    padding: 14px 18px !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    padding: 16px 20px !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
 }
-[data-testid="stMetricLabel"] { color: #718096 !important; font-size: 0.72rem !important; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600 !important; }
-[data-testid="stMetricValue"] { color: #1a202c !important; font-family: 'JetBrains Mono', monospace !important; }
+[data-testid="stMetricLabel"],
+[data-testid="stMetricLabel"] p,
+[data-testid="stMetricLabel"] span {
+    color: #475569 !important;
+    font-size: 0.72rem !important;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600 !important;
+}
+[data-testid="stMetricValue"],
+[data-testid="stMetricValue"] span {
+    color: #0f172a !important;
+    font-family: 'JetBrains Mono', monospace !important;
+}
+[data-testid="stMetricDelta"] span {
+    font-size: 0.78rem !important;
+}
 
-/* ── Divider ── */
-hr { border-color: #e2e8f0; margin: 24px 0; }
+/* ── Streamlit alert overrides — fully visible text ── */
+div[data-testid="stAlert"] {
+    border-radius: 10px !important;
+}
+div[data-testid="stAlert"] p,
+div[data-testid="stAlert"] span,
+div[data-testid="stAlert"] div {
+    font-weight: 500 !important;
+    font-size: 0.88rem !important;
+}
+/* success */
+div[data-testid="stAlert"][data-baseweb="notification"][kind="positive"],
+.stAlert.stSuccess,
+div.stSuccess {
+    background-color: #f0fdf4 !important;
+    border: 1.5px solid #86efac !important;
+}
+div[data-testid="stAlert"][data-baseweb="notification"][kind="positive"] p,
+div[data-testid="stAlert"][data-baseweb="notification"][kind="positive"] span {
+    color: #14532d !important;
+}
+/* info */
+div[data-testid="stAlert"][data-baseweb="notification"][kind="info"] {
+    background-color: #eff6ff !important;
+    border: 1.5px solid #93c5fd !important;
+}
+div[data-testid="stAlert"][data-baseweb="notification"][kind="info"] p,
+div[data-testid="stAlert"][data-baseweb="notification"][kind="info"] span {
+    color: #1e3a8a !important;
+}
+/* warning */
+div[data-testid="stAlert"][data-baseweb="notification"][kind="warning"] {
+    background-color: #fefce8 !important;
+    border: 1.5px solid #fde047 !important;
+}
+div[data-testid="stAlert"][data-baseweb="notification"][kind="warning"] p,
+div[data-testid="stAlert"][data-baseweb="notification"][kind="warning"] span {
+    color: #713f12 !important;
+}
+/* error */
+div[data-testid="stAlert"][data-baseweb="notification"][kind="error"] {
+    background-color: #fff1f2 !important;
+    border: 1.5px solid #fca5a5 !important;
+}
+div[data-testid="stAlert"][data-baseweb="notification"][kind="error"] p,
+div[data-testid="stAlert"][data-baseweb="notification"][kind="error"] span {
+    color: #7f1d1d !important;
+}
+
+/* ── Selectbox dropdown popover (renders OUTSIDE sidebar DOM) ── */
+[data-baseweb="popover"],
+[data-baseweb="popover"] *,
+[data-baseweb="menu"],
+[data-baseweb="menu"] *,
+ul[role="listbox"],
+ul[role="listbox"] li,
+ul[role="listbox"] li * {
+    background: #1e293b !important;
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+    -webkit-text-fill-color: #f1f5f9 !important;
+    border-color: #475569 !important;
+}
+ul[role="listbox"] li:hover,
+ul[role="listbox"] li[aria-selected="true"],
+ul[role="listbox"] li:hover *,
+ul[role="listbox"] li[aria-selected="true"] * {
+    background: #1d4ed8 !important;
+    background-color: #1d4ed8 !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+}
+
+/* ── Info box inside card ── */
+.info-box {
+    background: #eff6ff;
+    border: 1px solid #93c5fd;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 0.82rem;
+    color: #1e3a8a !important;
+    margin-bottom: 8px;
+}
 
 /* ── Table ── */
-.stDataFrame { border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0; } 
-            /* ── Streamlit alert color override ── */
+.stDataFrame { border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0; }
+table { color: #111827 !important; }
+thead th { color: #0f172a !important; font-weight: 700 !important; background: #f8fafc !important; }
+tbody td { color: #1e293b !important; }
 
-/* success (green box) */
-div[data-testid="stAlert"][kind="success"] {
-    background-color: #f0fff4 !important;
-    border: 1px solid #9ae6b4 !important;
-    color: #276749 !important;
-}
+/* ── Divider ── */
+hr { border-color: #e2e8f0 !important; margin: 24px 0; }
 
-/* info (blue box) */
-div[data-testid="stAlert"][kind="info"] {
-    background-color: #f7fafc !important;
-    border: 1px solid #cbd5e0 !important;
-    color: #2d3748 !important;
-}
+/* ── Section header text ── */
+h3 { color: #0f172a !important; }
 
-/* warning */
-div[data-testid="stAlert"][kind="warning"] {
-    background-color: #ecf4ff !important;
-    border: 1px solid #bfd7ff !important;
-    color: #1f2937 !important;
-}
-
-/* error */
-div[data-testid="stAlert"][kind="error"] {
-    background-color: #fff7f8 !important;
-    border: 1px solid #f8c2cb !important;
-    color: #831843 !important;
-}
-
-/* make sidebar select lighter and non-black */
-[data-testid="stSidebar"] select, [data-testid="stSidebar"] .css-1uc7j8h, [data-testid="stSidebar"] .stSelectbox {
-    background: #f8fafb !important;
-    color: #1f2937 !important;
-    border: 1px solid #dbeafe !important;
-}
-
-[data-testid="stSidebar"] .css-1uc7j8h::placeholder {
-    color: #475569 !important;
-}
+/* ── Footer ── */
+.footer-text { color: #94a3b8 !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -342,24 +527,29 @@ div[data-testid="stAlert"][kind="error"] {
 #  CONSTANTS & DEFAULTS
 # ─────────────────────────────────────────────
 DEFAULT_TEMP = 80.0
-DEFAULT_VIB = 0.25
+DEFAULT_VIB = 0.25  # g
 DEFAULT_PRESSURE = 3.5
 
-MACHINE_LOCATIONS = {"C1": "Compressor Room A",
-                     "C2": "Compressor Room B", "C3": "Production Line Area"}
+MM_PER_S_PER_G = 1000.0
 
-TRAD_DOWNTIME = 8   # hours
-PRED_DOWNTIME = 2   # hours
+MACHINE_LOCATIONS = {
+    "C1": "Compressor Room A",
+    "C2": "Compressor Room B",
+    "C3": "Production Line Area"
+}
+
+TRAD_DOWNTIME = 8
+PRED_DOWNTIME = 2
 
 # ─────────────────────────────────────────────
 #  HELPER FUNCTIONS
 # ─────────────────────────────────────────────
 
 
-def sensor_status(temp, vib, pressure):
-    if temp > 75 or vib > 0.7 or pressure < 4.0:
+def sensor_status(temp, vib_mm, pressure):
+    if temp > 75 or vib_mm > 700 or pressure < 4.0:
         return "Critical", "critical"
-    if temp > 60 or vib > 0.5 or pressure < 5.0:
+    if temp > 60 or vib_mm > 500 or pressure < 5.0:
         return "Warning", "warning"
     return "Normal", "normal"
 
@@ -373,9 +563,9 @@ def temp_status(v):
 
 
 def vib_status(v):
-    if v > 0.7:
+    if v > 700:
         return "Critical", "critical"
-    if v > 0.5:
+    if v > 500:
         return "Warning",  "warning"
     return "Normal", "normal"
 
@@ -388,7 +578,20 @@ def pres_status(v):
     return "Normal", "normal"
 
 
-def detect_faults(temp, vib, pressure):
+def extract_vibration_features(vib_mm):
+    n = 100
+    rng = np.random.default_rng(123)
+    signal = vib_mm + rng.normal(0, vib_mm * 0.08 + 0.3, size=n)
+    rms = np.sqrt(np.mean(signal ** 2))
+    m2 = np.mean((signal - np.mean(signal)) ** 2)
+    m4 = np.mean((signal - np.mean(signal)) ** 4)
+    kurtosis = m4 / (m2 ** 2) - 3 if m2 > 0 else 0.0
+    fft = np.fft.rfft(signal)
+    spectral_energy = np.sum(np.abs(fft) ** 2) / len(fft)
+    return round(rms, 2), round(kurtosis, 2), round(spectral_energy, 2)
+
+
+def detect_faults(temp, vib_mm, pressure):
     faults = []
     if temp > 75:
         faults.append({
@@ -400,15 +603,25 @@ def detect_faults(temp, vib, pressure):
             "action": "Shut down & inspect cooling system immediately",
             "icon": "🔴",
         })
-    if vib > 0.7:
+    if vib_mm > 700:
         faults.append({
             "fault": "Bearing Failure",
-            "sensor": f"Vib: {vib} g",
+            "sensor": f"Vib: {vib_mm:.1f} mm/s",
             "severity": "Critical",
             "sev_class": "sev-critical",
             "row_class": "fault-row-critical",
             "action": "Replace bearing — schedule emergency maintenance",
             "icon": "🔴",
+        })
+    elif vib_mm > 500:
+        faults.append({
+            "fault": "Bearing Wear",
+            "sensor": f"Vib: {vib_mm:.1f} mm/s",
+            "severity": "Warning",
+            "sev_class": "sev-warning",
+            "row_class": "fault-row-warning",
+            "action": "Inspect bearings & alignment",
+            "icon": "🟡",
         })
     if pressure < 4.0:
         faults.append({
@@ -433,20 +646,17 @@ def detect_faults(temp, vib, pressure):
     return faults
 
 
-def health_score(temp, vib, pressure):
+def health_score(temp, vib_mm, pressure, vib_rms, vib_kurtosis):
     t = max(0, 100 - ((temp - 20) / 80) * 100)
-    v = max(0, 100 - (vib / 1.0) * 100)
+    v_rms = max(0, 100 - min(vib_rms, 100))
+    k = max(0, 100 - min(max((vib_kurtosis - 3) * 10, 0), 100))
     p = max(0, min(100, (pressure / 10) * 100))
-    return round(t * 0.35 + v * 0.40 + p * 0.25)
+    return round(t * 0.3 + v_rms * 0.3 + k * 0.2 + p * 0.2)
 
 
 def health_bar(score):
-    if score >= 70:
-        col = "#38a169"
-    elif score >= 40:
-        col = "#d69e2e"
-    else:
-        col = "#e53e3e"
+    col = "#16a34a" if score >= 70 else (
+        "#d97706" if score >= 40 else "#dc2626")
     return f"""
     <div class="health-bar-bg">
         <div class="health-bar-fill" style="width:{score}%;background:{col};">
@@ -478,17 +688,17 @@ def trend_fig(times, vals, label, color, y_range):
     fig.add_trace(go.Scatter(
         x=times, y=vals, mode="lines",
         line=dict(color=color, width=2.5, shape="spline"),
-        fill="tozeroy", fillcolor="rgba(229,62,62,0.1)",
+        fill="tozeroy", fillcolor=f"rgba(100,100,100,0.07)",
         name=label,
     ))
-    fig.add_hline(y=vals[-1], line_dash="dot", line_color=color, opacity=0.5)
+    fig.add_hline(y=vals[-1], line_dash="dot", line_color=color, opacity=0.6)
     fig.update_layout(
         height=200, margin=dict(l=0, r=0, t=8, b=0),
         paper_bgcolor="white", plot_bgcolor="white",
-        font=dict(family="Inter", size=11, color="#4a5568"),
+        font=dict(family="Inter", size=11, color="#374151"),
         xaxis=dict(showgrid=False, showticklabels=False, zeroline=False),
-        yaxis=dict(showgrid=True, gridcolor="#f0f0f0", zeroline=False,
-                   range=y_range, tickfont=dict(size=10)),
+        yaxis=dict(showgrid=True, gridcolor="#f1f5f9", zeroline=False,
+                   range=y_range, tickfont=dict(size=10, color="#374151")),
         showlegend=False,
     )
     return fig
@@ -507,27 +717,32 @@ with st.sidebar:
     st.markdown("**Simulate Sensor Values**")
     temperature = st.slider("🌡 Temperature (°C)", 20,
                             100, int(DEFAULT_TEMP), 1)
-    vibration = st.slider("📳 Vibration (g)",    0.0, 1.0, DEFAULT_VIB, 0.01)
-    pressure = st.slider("💨 Pressure (bar)",   0.0,
-                         10.0, DEFAULT_PRESSURE, 0.1)
+    vibration_mm = st.slider("📳 Vibration (mm/s)", 0.0,
+                             1200.0, DEFAULT_VIB * 1000, 1.0)
+    pressure = st.slider("💨 Pressure (bar)", 0.0, 10.0, DEFAULT_PRESSURE, 0.1)
     st.markdown("---")
-    st.caption("💡 Default values: Temp=80°C · Vib=0.25g · Pressure=3.5 bar")
+    st.caption("💡 Default values: Temp=80°C · Vib=250 mm/s · Pressure=3.5 bar")
     st.markdown("---")
-    st.caption("🏭 Predictive Maintenance System v2.0")
+    st.caption("🏭 Airlytics v2.0")
 
 # ─────────────────────────────────────────────
 #  DERIVED DATA
 # ─────────────────────────────────────────────
-score = health_score(temperature, vibration, pressure)
-faults = detect_faults(temperature, vibration, pressure)
-_, sys_kind = sensor_status(temperature, vibration, pressure)
+vibration_g = vibration_mm / MM_PER_S_PER_G
+vibration_rms, vibration_kurtosis, vibration_energy = extract_vibration_features(
+    vibration_mm)
+
+score = health_score(temperature, vibration_mm, pressure,
+                     vibration_rms, vibration_kurtosis)
+faults = detect_faults(temperature, vibration_mm, pressure)
+_, sys_kind = sensor_status(temperature, vibration_mm, pressure)
 t_lbl, t_cls = temp_status(temperature)
-v_lbl, v_cls = vib_status(vibration)
+v_lbl, v_cls = vib_status(vibration_mm)
 p_lbl, p_cls = pres_status(pressure)
 
 t_times, t_vals = generate_trend(temperature, 1.8, 20, 100)
-v_times, v_vals = generate_trend(vibration,   0.02, 0.0, 1.0)
-p_times, p_vals = generate_trend(pressure,    0.15, 0.0, 10.0)
+v_times, v_vals = generate_trend(vibration_mm, 8.0, 0.0, 1200.0)
+p_times, p_vals = generate_trend(pressure, 0.15, 0.0, 10.0)
 
 reduction_pct = round((TRAD_DOWNTIME - PRED_DOWNTIME) / TRAD_DOWNTIME * 100)
 
@@ -538,13 +753,14 @@ reduction_pct = round((TRAD_DOWNTIME - PRED_DOWNTIME) / TRAD_DOWNTIME * 100)
 # ── Page Header ──
 st.markdown(f"""
 <div class="page-header">
-    <h1>⚙️ AI-Based Predictive Maintenance System for Industrial Air Compressors</h1>
-    <p>Hybrid AI Monitoring: clustering + prediction for real-time compressor health and maintenance alerts.</p>
+    <h1>⚙️ Airlytics</h1>
+    <p>AI-Based Predictive Maintenance System for Industrial Air Compressors —
+    Hybrid AI Monitoring with real-time fault detection and health analytics.</p>
     <div class="header-badges">
         <span class="hbadge">🤖 Hybrid AI</span>
         <span class="hbadge">📊 Industry 4.0</span>
         <span class="hbadge">🧠 Fault Prediction</span>
-        <span class="hbadge">📍 {machine_id} - {location}</span>
+        <span class="hbadge">📍 {machine_id} — {location}</span>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -552,16 +768,24 @@ st.markdown(f"""
 # ── KPI Row ──
 k1, k2, k3, k4 = st.columns(4)
 with k1:
-    st.metric("🌡 Temperature",  f"{temperature} °C",
+    st.metric("🌡 Temperature", f"{temperature} °C",
               delta=f"{temperature - 45} °C vs baseline", delta_color="inverse")
 with k2:
-    st.metric("📳 Vibration",    f"{vibration:.2f} g",
-              delta=f"{round(vibration - 0.25, 2)} g vs baseline", delta_color="inverse")
+    st.metric("📳 Vibration", f"{vibration_mm:.1f} mm/s",
+              delta=f"{round(vibration_mm - 250, 1)} mm/s vs baseline", delta_color="inverse")
 with k3:
-    st.metric("💨 Pressure",     f"{pressure:.1f} bar",
+    st.metric("💨 Pressure", f"{pressure:.1f} bar",
               delta=f"{round(pressure - 5.5, 1)} bar vs nominal", delta_color="normal")
 with k4:
     st.metric("🏥 Health Score", f"{score} / 100")
+
+k5, k6, k7 = st.columns(3)
+with k5:
+    st.metric("RMS", f"{vibration_rms} mm/s")
+with k6:
+    st.metric("Kurtosis", f"{vibration_kurtosis}")
+with k7:
+    st.metric("Spectral Energy", f"{vibration_energy}")
 
 st.markdown("---")
 
@@ -570,37 +794,36 @@ st.markdown("---")
 # ═══════════════════════════════════════
 st.markdown("""
 <div class="sec-head">
-    <span class="sec-head-icon" style="background:#ebf8ff;">📡</span>
+    <span class="sec-head-icon" style="background:#dbeafe;">📡</span>
     Section 1 — Live Sensor Monitoring
 </div>""", unsafe_allow_html=True)
 
 sc1, sc2, sc3 = st.columns(3)
 with sc1:
     st.markdown(sensor_card_html("🌡", "Temperature",
-                f"{temperature}", "°C",  t_lbl, t_cls), unsafe_allow_html=True)
-    st.plotly_chart(trend_fig(t_times, t_vals, "Temp", "#e53e3e", [
-                    15, 105]), use_container_width=True)
+                f"{temperature}", "°C", t_lbl, t_cls), unsafe_allow_html=True)
+    st.plotly_chart(trend_fig(t_times, t_vals, "Temp",
+                    "#dc2626", [15, 105]), width='stretch')
 with sc2:
     st.markdown(sensor_card_html("📳", "Vibration",
-                f"{vibration:.2f}", "g",  v_lbl, v_cls), unsafe_allow_html=True)
-    st.plotly_chart(trend_fig(v_times, v_vals, "Vib",  "#d69e2e",
-                    [-0.05, 1.05]), use_container_width=True)
+                f"{vibration_mm:.1f}", "mm/s", v_lbl, v_cls), unsafe_allow_html=True)
+    st.plotly_chart(trend_fig(v_times, v_vals, "Vib",
+                    "#d97706", [0, 1200]), width='stretch')
 with sc3:
     st.markdown(sensor_card_html("💨", "Pressure",
                 f"{pressure:.1f}", "bar", p_lbl, p_cls), unsafe_allow_html=True)
     st.plotly_chart(trend_fig(p_times, p_vals, "Press",
-                    "#3182ce", [-0.3, 10.5]), use_container_width=True)
+                    "#2563eb", [-0.3, 10.5]), width='stretch')
 
-# Sensor summary table
 sensor_table = pd.DataFrame({
-    "Sensor":        ["Temperature", "Vibration", "Pressure"],
-    "Value":         [f"{temperature} °C", f"{vibration:.2f} g", f"{pressure:.1f} bar"],
-    "Normal Range":  ["20 – 60 °C", "0.0 – 0.5 g", "5.0 – 9.0 bar"],
-    "Status":        [t_lbl, v_lbl, p_lbl],
-    "Threshold":     ["> 75°C = Critical", "> 0.7g = Critical", "< 4.0 bar = Warning"],
+    "Sensor":       ["Temperature", "Vibration", "Pressure"],
+    "Value":        [f"{temperature} °C", f"{vibration_mm:.1f} mm/s", f"{pressure:.1f} bar"],
+    "Normal Range": ["20 – 60 °C", "0 – 500 mm/s", "5.0 – 9.0 bar"],
+    "Status":       [t_lbl, v_lbl, p_lbl],
+    "Threshold":    ["> 75°C = Critical", "> 700 mm/s = Critical", "< 4.0 bar = Warning"],
 })
 st.markdown('<div class="card">', unsafe_allow_html=True)
-st.markdown("**📋 Sensor Summary Table**", unsafe_allow_html=False)
+st.markdown("**📋 Sensor Summary Table**")
 st.table(sensor_table)
 st.markdown('</div>', unsafe_allow_html=True)
 
@@ -611,7 +834,7 @@ st.markdown("---")
 # ═══════════════════════════════════════
 st.markdown("""
 <div class="sec-head">
-    <span class="sec-head-icon" style="background:#f0fff4;">🏥</span>
+    <span class="sec-head-icon" style="background:#dcfce7;">🏥</span>
     Section 2 — Machine Health Analysis
 </div>""", unsafe_allow_html=True)
 
@@ -623,55 +846,51 @@ with ha1:
     st.markdown(health_bar(score), unsafe_allow_html=True)
 
     if score >= 70:
-        health_desc = ("🟢 **Good Condition** — Compressor is operating within safe parameters. "
-                       "Continue routine monitoring schedule.")
-        st.success(health_desc)
+        st.success(
+            "🟢 **Good Condition** — Compressor is operating within safe parameters. Continue routine monitoring schedule.")
     elif score >= 40:
-        health_desc = ("🟡 **Moderate Concern** — Some sensor readings are elevated. "
-                       "Schedule preventive inspection within 48 hours.")
-        st.warning(health_desc)
+        st.warning(
+            "🟡 **Moderate Concern** — Some sensor readings are elevated. Schedule preventive inspection within 48 hours.")
     else:
-        health_desc = ("🔴 **Poor Condition** — Multiple sensors outside safe range. "
-                       "Immediate maintenance intervention required.")
-        st.error(health_desc)
+        st.error(
+            "🔴 **Poor Condition** — Multiple sensors outside safe range. Immediate maintenance intervention required.")
 
     st.markdown("""
-    <div style="margin-top:14px; font-size:0.78rem; color:#718096; line-height:1.8;">
+    <div class="score-weights">
         <strong>Score Weights:</strong><br>
-        📳 Vibration: 40% &nbsp;|&nbsp; 🌡 Temperature: 35% &nbsp;|&nbsp; 💨 Pressure: 25%
+        📳 Vibration RMS: 30% &nbsp;|&nbsp; Kurtosis: 20% &nbsp;|&nbsp; 🌡 Temperature: 30% &nbsp;|&nbsp; 💨 Pressure: 20%
     </div>""", unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 with ha2:
-    # Gauge chart
-    gauge_col = "#38a169" if score >= 70 else (
-        "#d69e2e" if score >= 40 else "#e53e3e")
+    gauge_col = "#16a34a" if score >= 70 else (
+        "#d97706" if score >= 40 else "#dc2626")
     fig_gauge = go.Figure(go.Indicator(
         mode="gauge+number+delta",
         value=score,
-        delta={"reference": 70, "increasing": {"color": "#38a169"},
-               "decreasing": {"color": "#e53e3e"}},
+        delta={"reference": 70, "increasing": {"color": "#16a34a"},
+               "decreasing": {"color": "#dc2626"}},
         gauge={
-            "axis": {"range": [0, 100], "tickwidth": 1, "tickcolor": "#a0aec0", "tickfont": {"size": 10}},
+            "axis": {"range": [0, 100], "tickwidth": 1, "tickcolor": "#94a3b8", "tickfont": {"size": 10, "color": "#374151"}},
             "bar": {"color": gauge_col, "thickness": 0.25},
             "bgcolor": "white",
             "borderwidth": 2, "bordercolor": "#e2e8f0",
             "steps": [
-                {"range": [0,  40], "color": "#fff5f5"},
-                {"range": [40, 70], "color": "#fffff0"},
-                {"range": [70, 100], "color": "#f0fff4"},
+                {"range": [0,  40], "color": "#fff1f2"},
+                {"range": [40, 70], "color": "#fefce8"},
+                {"range": [70, 100], "color": "#f0fdf4"},
             ],
-            "threshold": {"line": {"color": "#2d3748", "width": 3}, "thickness": 0.75, "value": 70},
+            "threshold": {"line": {"color": "#0f172a", "width": 3}, "thickness": 0.75, "value": 70},
         },
         title={"text": f"Health Score — {machine_id}",
-               "font": {"size": 13, "color": "#4a5568"}},
+               "font": {"size": 13, "color": "#374151"}},
         number={"font": {"size": 36, "color": gauge_col}},
     ))
     fig_gauge.update_layout(
         height=260, margin=dict(l=20, r=20, t=40, b=10),
-        paper_bgcolor="white", font=dict(family="Inter"),
+        paper_bgcolor="white", font=dict(family="Inter", color="#374151"),
     )
-    st.plotly_chart(fig_gauge, use_container_width=True)
+    st.plotly_chart(fig_gauge, width='stretch')
 
 st.markdown("---")
 
@@ -680,17 +899,19 @@ st.markdown("---")
 # ═══════════════════════════════════════
 st.markdown("""
 <div class="sec-head">
-    <span class="sec-head-icon" style="background:#fff5f5;">🔍</span>
+    <span class="sec-head-icon" style="background:#fee2e2;">🔍</span>
     Section 3 — Fault Detection Results
 </div>""", unsafe_allow_html=True)
 
 st.markdown('<div class="card">', unsafe_allow_html=True)
 st.markdown("""
 <div style="display:grid; grid-template-columns:1.5fr 0.8fr 2fr; gap:12px;
-    padding:8px 14px; margin-bottom:4px; font-size:0.72rem; font-weight:700;
-    text-transform:uppercase; letter-spacing:0.08em; color:#718096;
+    padding:8px 14px; margin-bottom:6px; font-size:0.72rem; font-weight:700;
+    text-transform:uppercase; letter-spacing:0.08em; color:#374151 !important;
     border-bottom:2px solid #e2e8f0;">
-    <span>Fault Type / Sensor</span><span>Severity</span><span>Recommended Action</span>
+    <span style="color:#374151 !important;">Fault Type / Sensor</span>
+    <span style="color:#374151 !important;">Severity</span>
+    <span style="color:#374151 !important;">Recommended Action</span>
 </div>
 """, unsafe_allow_html=True)
 
@@ -699,7 +920,7 @@ for f in faults:
     <div class="fault-row {f['row_class']}">
         <div>
             <div class="fault-name">{f['icon']} {f['fault']}</div>
-            <div style="font-size:0.75rem; color:#718096; margin-top:2px; font-family:'JetBrains Mono',monospace;">{f['sensor']}</div>
+            <div class="fault-sensor-text">{f['sensor']}</div>
         </div>
         <div><span class="fault-severity {f['sev_class']}">{f['severity']}</span></div>
         <div class="fault-action">⚙️ {f['action']}</div>
@@ -714,7 +935,7 @@ st.markdown("---")
 # ═══════════════════════════════════════
 st.markdown("""
 <div class="sec-head">
-    <span class="sec-head-icon" style="background:#fffbeb;">🔔</span>
+    <span class="sec-head-icon" style="background:#fef9c3;">🔔</span>
     Section 4 — Maintenance Alert System
 </div>""", unsafe_allow_html=True)
 
@@ -727,29 +948,26 @@ if has_critical:
     st.error(f"🚨 **CRITICAL ALERT** — Immediate Maintenance Required\n\n"
              f"Compressor **{machine_id}** at **{location}** has one or more critical sensor readings. "
              f"Dispatch technician immediately to prevent equipment failure.")
-
 if has_warning:
     st.warning(f"⚠️ **WARNING** — Maintenance Recommended\n\n"
                f"Compressor **{machine_id}** at **{location}** shows early fault indicators. "
                f"Schedule inspection within 24–48 hours to avoid escalation.")
-
 if not has_critical and not has_warning:
     st.success(f"✅ **All Clear** — No Maintenance Required\n\n"
                f"Compressor **{machine_id}** at **{location}** is operating normally. "
                f"Next scheduled maintenance: as per standard interval.")
 
-# Alert log table
 alert_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 alert_rows = []
 for f in faults:
     if f["fault"] != "No Faults Detected":
         alert_rows.append({
-            "Timestamp":   alert_time,
-            "Machine":     machine_id,
-            "Location":    location,
-            "Fault":       f["fault"],
-            "Severity":    f["severity"],
-            "Action":      f["action"],
+            "Timestamp": alert_time,
+            "Machine":   machine_id,
+            "Location":  location,
+            "Fault":     f["fault"],
+            "Severity":  f["severity"],
+            "Action":    f["action"],
         })
 
 if alert_rows:
@@ -759,13 +977,36 @@ else:
     st.info("📋 No active alerts in the system log.")
 
 st.markdown("---")
+st.markdown("### 🤖 AI-Inspired Maintenance Recommendations")
+
+ai_recommendations = []
+if temperature > 75:
+    ai_recommendations.append(
+        "High temperature detected — check cooling system and airflow.")
+if vibration_rms > 500 or vibration_mm > 700:
+    ai_recommendations.append(
+        "High vibration levels — inspect bearings, coupling, and shaft alignment.")
+if vibration_kurtosis > 5:
+    ai_recommendations.append(
+        "Abnormal vibration kurtosis — schedule vibration diagnostics for bearing faults.")
+if pressure < 4.5:
+    ai_recommendations.append(
+        "Low pressure detected — inspect valves, piping leaks, and inlet restrictions.")
+if not ai_recommendations:
+    ai_recommendations.append(
+        "System nominal. Continue routine predictive maintenance checks.")
+
+for rec in ai_recommendations:
+    st.info(f"💡 {rec}")
+
+st.markdown("---")
 
 # ═══════════════════════════════════════
 #  SECTION 5 — DOWNTIME REDUCTION REPORT
 # ═══════════════════════════════════════
 st.markdown("""
 <div class="sec-head">
-    <span class="sec-head-icon" style="background:#f0fff4;">📊</span>
+    <span class="sec-head-icon" style="background:#dcfce7;">📊</span>
     Section 5 — Downtime Reduction Report
 </div>""", unsafe_allow_html=True)
 
@@ -788,7 +1029,7 @@ with dt1:
         </div>
         <div style="text-align:center;">
             <span class="reduction-pill">⬇ {reduction_pct}% Downtime Reduction</span>
-            <div style="font-size:0.78rem; color:#718096; margin-top:8px;">
+            <div class="saving-text">
                 Saving <strong>{TRAD_DOWNTIME - PRED_DOWNTIME} hours</strong> per maintenance event<br>
                 through AI-driven early fault detection.
             </div>
@@ -807,41 +1048,42 @@ with dt2:
     fig_bar = go.Figure()
     fig_bar.add_trace(go.Bar(
         name="Traditional", x=categories, y=trad_vals,
-        marker_color="#fc8181", marker_line_color="#e53e3e", marker_line_width=1,
+        marker_color="#f87171", marker_line_color="#dc2626", marker_line_width=1,
     ))
     fig_bar.add_trace(go.Bar(
         name="Predictive AI", x=categories, y=pred_vals,
-        marker_color="#68d391", marker_line_color="#38a169", marker_line_width=1,
+        marker_color="#4ade80", marker_line_color="#16a34a", marker_line_width=1,
     ))
     fig_bar.update_layout(
         barmode="group",
         title=dict(text="Downtime Breakdown by Phase (hours)",
-                   font=dict(size=13, color="#2d3748")),
+                   font=dict(size=13, color="#0f172a")),
         height=280, margin=dict(l=0, r=0, t=40, b=0),
         paper_bgcolor="white", plot_bgcolor="white",
-        legend=dict(orientation="h", y=-0.18, font=dict(size=11)),
-        yaxis=dict(showgrid=True, gridcolor="#f0f0f0", title="Hours"),
-        xaxis=dict(tickfont=dict(size=10)),
-        font=dict(family="Inter"),
+        legend=dict(orientation="h", y=-0.18,
+                    font=dict(size=11, color="#374151")),
+        yaxis=dict(showgrid=True, gridcolor="#f1f5f9",
+                   title=dict(text="Hours", font=dict(color="#374151")),
+                   tickfont=dict(color="#374151")),
+        xaxis=dict(tickfont=dict(size=10, color="#374151")),
+        font=dict(family="Inter", color="#374151"),
     )
-    st.plotly_chart(fig_bar, use_container_width=True)
+    st.plotly_chart(fig_bar, width='stretch')
 
-    # ROI metrics
     r1, r2, r3 = st.columns(3)
     with r1:
         st.metric("Time Saved",
                   f"{TRAD_DOWNTIME - PRED_DOWNTIME} hrs", "per event")
     with r2:
-        st.metric("Reduction",
-                  f"{reduction_pct}%",                   "downtime ↓")
+        st.metric("Reduction", f"{reduction_pct}%", "downtime ↓")
     with r3:
-        st.metric("Est. Cost Save", "₹48,000",
-                  "per incident")
+        st.metric("Est. Cost Save", "₹48,000", "per incident")
 
 # ── Footer ──
 st.markdown("---")
 st.markdown("""
-<div style="text-align:center; font-size:0.72rem; color:#a0aec0; letter-spacing:0.08em; padding: 8px 0 4px;">
-    PREDICTIVE MAINTENANCE SYSTEM v2.0 &nbsp;·&nbsp; INDUSTRY 4.0 PROTOTYPE &nbsp;·&nbsp;
+<div style="text-align:center; font-size:0.72rem; color:#94a3b8 !important;
+     letter-spacing:0.08em; padding: 8px 0 4px;">
+    AIRLYTICS v2.0 &nbsp;·&nbsp; INDUSTRY 4.0 PROTOTYPE &nbsp;·&nbsp;
     AI-DRIVEN FAULT DETECTION &nbsp;·&nbsp; REAL-TIME SENSOR FUSION
 </div>""", unsafe_allow_html=True)
